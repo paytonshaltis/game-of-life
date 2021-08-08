@@ -30,13 +30,14 @@ class Game:
     def _draw_grid(self):
         """Draws the grid on the main screen surface."""
         
-        for x in range(self.settings.screen_width):
-            for y in range(self.settings.screen_height):
+        count = 0
+        for x in range(0, self.settings.screen_width, self.settings.square_size):
+            for y in range(0, self.settings.screen_height, self.settings.square_size):
                 
                 # create a temporary Rect to be drawn
                 rect = pygame.Rect(
-                    x * self.settings.square_size,
-                    y * self.settings.square_size,
+                    x,
+                    y,
                     self.settings.square_size,
                     self.settings.square_size
                 )
@@ -48,6 +49,11 @@ class Game:
                     rect, 
                     self.settings.square_bord_thick
                 )
+                count += 1
+        
+        # for debugging
+        print(count)
+
 
 
 

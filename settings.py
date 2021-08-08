@@ -1,5 +1,4 @@
 """Contains the Settings class to manage game settings."""
-from game import Game
 
 COLOR_WHITE = (255, 255, 255)
 COLOR_BLACK = (0, 0, 0)
@@ -7,7 +6,7 @@ COLOR_BLACK = (0, 0, 0)
 class Settings:
     """Instance of the Settings class to manage game settings."""
 
-    def __init__(self, game:Game):
+    def __init__(self, game):
         """Creates an instance of the Settings class using a Game instance."""
         
         # instance of the Game class for access to its attributes

@@ -75,6 +75,32 @@ class Game:
                 )
 
 
+    def _update_borders(self):
+        """Updates the borders of the grid for each pass of the main game loop."""
+        for i in range(int(self.settings.screen_width / self.settings.square_size)):
+            pygame.draw.rect(
+                self.screen,
+                (0, 0, 0),
+                pygame.Rect(
+                    self.settings.square_size * i, 
+                    0, 
+                    1, 
+                    self.settings.screen_height
+                )
+            )
+        for i in range(int(self.settings.screen_height / self.settings.square_size)):
+            pygame.draw.rect(
+                self.screen,
+                (0, 0, 0),
+                pygame.Rect(
+                    0,
+                    self.settings.square_size * i,
+                    self.settings.screen_width,
+                    1
+                )
+            )
+
+
     def _toggle_square(self, row, col):
         """Toggles the state of a square at row, col."""
         if self.grid[row][col][1] == self.settings.bg_color:
@@ -94,9 +120,10 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_e:
                         self._toggle_square(10, 10)
-                        
+
             self.screen.fill(self.settings.bg_color)
             self._update_grid()
+            self._update_borders()
             pygame.display.flip()
 
 

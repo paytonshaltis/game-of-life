@@ -1,5 +1,6 @@
 """Contains the Game class to create instances of the New Game of Life."""
-import pygame, pygame.display, pygame.event, pygame.rect, pygame.draw
+from typing import Tuple
+import pygame, pygame.display, pygame.event, pygame.rect, pygame.draw, pygame.mouse
 import sys, time
 from settings import Settings
 
@@ -25,7 +26,7 @@ class Game:
         self.screen.fill(self.settings.bg_color)
         pygame.display.set_caption('New Game of Life')
 
-        # create the grid
+        # initialize the grid
         self._initialize_grid()
 
 
@@ -41,7 +42,6 @@ class Game:
             # clear the 'row' and begin traversing columns
             row = []
             for x in range(0, self.settings.screen_width, self.settings.square_size):
-                
                 # create a Rect object at (x, y)
                 rect = pygame.Rect(
                     x,
@@ -49,16 +49,8 @@ class Game:
                     self.settings.square_size,
                     self.settings.square_size
                 )
-
-                # store the Rect in a list with its color (current row)
+                # store the Rect in a list with its color (rect, color)
                 row.append((rect, self.settings.bg_color))
-
-                # draw the temp Rect with proper settings
-                pygame.draw.rect(
-                    self.screen, 
-                    self.settings.bg_color, 
-                    rect,
-                )
 
             # add the current row to the grid instance variable
             self.grid.append(row)
@@ -66,6 +58,8 @@ class Game:
 
     def _update_grid(self):
         """Updates the grid each for each pass of the main game loop."""
+        
+        # use the rect and color from each tuple in self.grid
         for row in self.grid:
             for tup in row:
                 pygame.draw.rect(
@@ -77,6 +71,15 @@ class Game:
 
     def _update_borders(self):
         """Updates the borders of the grid for each pass of the main game loop."""
+
+        self._update_vertical_borders()
+        self._update_horizontal_borders()
+
+
+    def _update_vertical_borders(self):
+        """Updates the vertical borders on the screen."""  
+
+        # draws the vertical lines on the screen
         for i in range(int(self.settings.screen_width / self.settings.square_size)):
             pygame.draw.rect(
                 self.screen,
@@ -88,6 +91,11 @@ class Game:
                     self.settings.screen_height
                 )
             )
+        
+    def _update_horizontal_borders(self):
+        """Updates the horizontal borders on the screen."""
+
+        # draws the horizontal lines on the screen
         for i in range(int(self.settings.screen_height / self.settings.square_size)):
             pygame.draw.rect(
                 self.screen,
@@ -101,8 +109,32 @@ class Game:
             )
 
 
+    def _check_mouse_click(self, mouse_pos):
+        """
+        Checks to see if a square was clicked with the mouse. The square
+        will then be toggled if it happened to be clicked on
+        """
+
+        # traverse the entire list of Rect objects
+        row_count = 0
+        col_count = 0
+        
+        for row in self.grid:
+            col_count = 0
+            for tup in row:
+                # if a mouse point collides with a rectangle, toggle it
+                if tup[0].collidepoint(mouse_pos):
+                    self._toggle_square(row_count, col_count)
+                    return
+
+                col_count += 1
+            
+            row_count += 1
+
+
     def _toggle_square(self, row, col):
         """Toggles the state of a square at row, col."""
+        
         if self.grid[row][col][1] == self.settings.bg_color:
             self.grid[row][col] = (self.grid[row][col][0], self.settings.square_color)
         else:
@@ -111,15 +143,17 @@ class Game:
 
     def run_game(self):
         """The main game loop."""
+        
         while True:
-            
             # check for events
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_e:
-                        self._toggle_square(10, 10)
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == pygame.BUTTON_LEFT:
+                        mouse_pos = pygame.mouse.get_pos()
+                        print(mouse_pos)
+                        self._check_mouse_click(mouse_pos)
 
             self.screen.fill(self.settings.bg_color)
             self._update_grid()

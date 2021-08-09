@@ -20,5 +20,4 @@ class Settings:
         
         # square settings
         self.square_color = COLOR_BLACK
-        self.square_size = 40
-        self.square_bord_thick = 1
+        self.square_size = 20

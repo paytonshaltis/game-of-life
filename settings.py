@@ -2,6 +2,7 @@
 
 COLOR_WHITE = (255, 255, 255)
 COLOR_BLACK = (0, 0, 0)
+COLOR_GRAY = (200, 200, 200)
 
 class Settings:
     """Instance of the Settings class to manage game settings."""
@@ -21,3 +22,6 @@ class Settings:
         # square settings
         self.square_color = COLOR_BLACK
         self.square_size = 20
+
+        # game speed settings
+        self.evolution_speed = 1

@@ -109,6 +109,51 @@ class Game:
             )
 
 
+    def _is_alive(self, row, col):
+        """Returns True if the cell at (row, col) is alive."""
+        return self.grid[row][col][1] != self.settings.bg_color
+
+
+    def _total_surround(self, row, col):
+        """Returns the total number of living cells surrounding the one at (row, col)."""
+
+        right_pos = int(self.settings.screen_width / self.settings.square_size) - 1
+        bottom_pos = int(self.settings.screen_height / self.settings.square_size) - 1
+        count = 0
+
+        # deal with the 4 corners
+        if row == 0 and col == 0:
+            if self._is_alive(0, 1):
+                count += 1
+            if self._is_alive(1, 1):
+                count += 1
+            if self._is_alive(1, 0):
+                count += 1
+        elif row == 0 and col == right_pos:
+            if self._is_alive(0, right_pos - 1):
+                count += 1
+            if self._is_alive(1, right_pos - 1):
+                count += 1
+            if self._is_alive(1, right_pos):
+                count += 1
+        elif row == bottom_pos and col == 0:
+            if self._is_alive(bottom_pos - 1, 0):
+                count += 1
+            if self._is_alive(bottom_pos - 1, 1):
+                count += 1
+            if self._is_alive(bottom_pos, 1):
+                count += 1            
+        elif row == bottom_pos and col == right_pos:
+            if self._is_alive(bottom_pos, right_pos - 1):
+                count += 1
+            if self._is_alive(bottom_pos - 1, right_pos - 1):
+                count += 1
+            if self._is_alive(bottom_pos - 1, right_pos):
+                count += 1
+            
+        return count
+
+
     def _check_mouse_click(self, mouse_pos):
         """
         Checks to see if a square was clicked with the mouse. The square
@@ -120,6 +165,7 @@ class Game:
         col_count = 0
         
         for row in self.grid:
+            
             col_count = 0
             for tup in row:
                 # if a mouse point collides with a rectangle, toggle it
@@ -134,8 +180,8 @@ class Game:
 
     def _toggle_square(self, row, col):
         """Toggles the state of a square at row, col."""
-        
-        if self.grid[row][col][1] == self.settings.bg_color:
+
+        if not self._is_alive(row, col):
             self.grid[row][col] = (self.grid[row][col][0], self.settings.square_color)
         else:
             self.grid[row][col] = (self.grid[row][col][0], self.settings.bg_color)
@@ -149,6 +195,16 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_RETURN:
+                        print(
+                            'Enter Pressed:',
+                            self._total_surround(0, 0),
+                            self._total_surround(0, int(self.settings.screen_width / self.settings.square_size) - 1),
+                            self._total_surround(int(self.settings.screen_height / self.settings.square_size) - 1, 0),
+                            self._total_surround(int(self.settings.screen_height / self.settings.square_size) - 1, int(self.settings.screen_width / self.settings.square_size) - 1),
+                        )
+                
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == pygame.BUTTON_LEFT:
                         mouse_pos = pygame.mouse.get_pos()

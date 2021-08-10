@@ -1,4 +1,5 @@
 """Contains the Settings class to manage game settings."""
+import pygame, pygame.font
 
 COLOR_WHITE = (255, 255, 255)
 COLOR_BLACK = (0, 0, 0)
@@ -31,3 +32,8 @@ class Settings:
         # menu settings
         self.menu_size = 5/6
         self.menu_color = COLOR_DGRAY
+        self.font = 'optima'
+
+        # test for the font
+        if self.font not in pygame.font.get_fonts():
+            self.font = None

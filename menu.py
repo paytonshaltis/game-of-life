@@ -50,9 +50,9 @@ class Menu:
         self.element_title = MenuElement(
             game=self.game, 
             text='MENU', 
-            font=None,
+            font=self.settings.font,
             font_size=int(
-                (self.settings.screen_width * self.settings.screen_height) / 10000),
+                (self.settings.screen_width * self.settings.screen_height) / 12500),
             color=(0, 0, 0), 
             position=self.menu_rect.midtop,
             bold=False)

@@ -30,13 +30,13 @@ class Game:
         # initialize Pygame 
         pygame.init()
 
-        # create a Menu object
-        self.menu = Menu(self)
-
         # set up the screen
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
         self.screen.fill(self.settings.bg_color)
         pygame.display.set_caption('New Game of Life')
+
+        # create a Menu object
+        self.menu = Menu(self)
 
         # initialize the grid
         self._initialize_grid()
@@ -353,24 +353,17 @@ class Game:
                 self.grid[row][col] = (self.grid[row][col][0], self.settings.bg_color)
 
 
-    def _open_pause_menu(self):
+    def _open_menu(self):
         """
-        Opens the pause menu, freezing the current generation in place
+        Opens the menu, freezing the current generation in place
         and giving the user a range of different options.
         """
         
-        # pauses the game and brings up the menu
+        # pauses the game
         self.in_menu = True
-        size = (
-            (5/6) * self.settings.screen_width, 
-            (5/6) * self.settings.screen_height
-        )
-        pause_menu = pygame.Rect(0, 0, size[0], size[1])
-        pause_menu.center = self.screen.get_rect().center
         
-        # draw the menu elements
-        pygame.draw.rect(self.screen, self.settings.pause_menu_color, pause_menu)
-        self.menu.element_title.draw_menu_element()
+        # draw the menu and its elements
+        self.menu.draw_menu()
         pygame.display.flip()
         
         while self.in_menu:
@@ -382,7 +375,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     sys.exit()
                 
-                # closes out of the pause menu
+                # closes out of the menu
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.in_menu = False
@@ -403,7 +396,7 @@ class Game:
         
         # escape key brings up the menu
         if event.key == pygame.K_ESCAPE:
-            self._open_pause_menu()
+            self._open_menu()
 
         # c key clears the board (when sim is not running)
         if event.key == pygame.K_c and not self.simulation_running:

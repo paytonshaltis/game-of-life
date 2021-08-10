@@ -20,7 +20,6 @@ class Settings:
         self.screen_height = 800
         self.bg_color = COLOR_WHITE
         self.border_color = COLOR_GRAY
-        self.pause_menu_color = COLOR_DGRAY
         
         # square settings
         self.square_color = COLOR_BLACK
@@ -28,3 +27,7 @@ class Settings:
 
         # game speed settings
         self.evolution_speed = 0.1
+
+        # menu settings
+        self.menu_size = 5/6
+        self.menu_color = COLOR_DGRAY

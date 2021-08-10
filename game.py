@@ -2,6 +2,7 @@
 import pygame, pygame.display, pygame.event, pygame.rect, pygame.draw, pygame.mouse, pygame.surface
 import sys, time
 from settings import Settings
+from menu import Menu
 
 class Game:
     """An instance of the Game class."""
@@ -11,6 +12,7 @@ class Game:
         
         # instance variables
         self.settings = None
+        self.menu = None
         self.screen = None
         self.grid = []
         self.grid_copy = []
@@ -27,6 +29,9 @@ class Game:
 
         # initialize Pygame 
         pygame.init()
+
+        # create a Menu object
+        self.menu = Menu(self)
 
         # set up the screen
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
@@ -362,6 +367,12 @@ class Game:
         )
         pause_menu = pygame.Rect(0, 0, size[0], size[1])
         pause_menu.center = self.screen.get_rect().center
+        
+        # draw the menu elements
+        pygame.draw.rect(self.screen, self.settings.pause_menu_color, pause_menu)
+        self.menu.element_title.draw_menu_element()
+        pygame.display.flip()
+        
         while self.in_menu:
 
             # check for events in the menu
@@ -375,9 +386,6 @@ class Game:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
                         self.in_menu = False
-
-            pygame.draw.rect(self.screen, self.settings.pause_menu_color, pause_menu)
-            pygame.display.flip()
 
 
     def _check_keydown_events(self, event):

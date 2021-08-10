@@ -150,7 +150,72 @@ class Game:
                 count += 1
             if self._is_alive(bottom_pos - 1, right_pos):
                 count += 1
-            
+        
+        # deal with the outer edges
+        elif row == 0:
+            if self._is_alive(0, col - 1):
+                count += 1
+            if self._is_alive(0, col + 1):
+                count += 1
+            if self._is_alive(1, col - 1):
+                count += 1
+            if self._is_alive(1, col + 1):
+                count += 1
+            if self._is_alive(1, col):
+                count += 1
+        elif row == bottom_pos:
+            if self._is_alive(bottom_pos, col - 1):
+                count += 1
+            if self._is_alive(bottom_pos, col + 1):
+                count += 1
+            if self._is_alive(bottom_pos - 1, col - 1):
+                count += 1
+            if self._is_alive(bottom_pos - 1, col + 1):
+                count += 1
+            if self._is_alive(bottom_pos - 1, col):
+                count += 1
+        elif col == 0:
+            if self._is_alive(row + 1, 0):
+                count += 1
+            if self._is_alive(row + 1, 1):
+                count += 1
+            if self._is_alive(row - 1, 0):
+                count += 1
+            if self._is_alive(row - 1, 1):
+                count += 1
+            if self._is_alive(row, 1):
+                count += 1            
+        elif col == right_pos:
+            if self._is_alive(row + 1, right_pos):
+                count += 1
+            if self._is_alive(row + 1, right_pos - 1):
+                count += 1
+            if self._is_alive(row - 1, right_pos):
+                count += 1
+            if self._is_alive(row - 1, right_pos - 1):
+                count += 1
+            if self._is_alive(row, right_pos - 1):
+                count += 1   
+    
+        # deal with the inner squares
+        else:
+            if self._is_alive(row - 1, col - 1):
+                count += 1
+            if self._is_alive(row - 1, col):
+                count += 1
+            if self._is_alive(row - 1, col + 1):
+                count += 1
+            if self._is_alive(row, col - 1):
+                count += 1
+            if self._is_alive(row, col + 1):
+                count += 1
+            if self._is_alive(row + 1, col - 1):
+                count += 1
+            if self._is_alive(row + 1, col):
+                count += 1
+            if self._is_alive(row + 1, col + 1):
+                count += 1
+
         return count
 
 
@@ -196,15 +261,12 @@ class Game:
                 if event.type == pygame.QUIT:
                     sys.exit()
                 if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_RETURN:
-                        print(
-                            'Enter Pressed:',
-                            self._total_surround(0, 0),
-                            self._total_surround(0, int(self.settings.screen_width / self.settings.square_size) - 1),
-                            self._total_surround(int(self.settings.screen_height / self.settings.square_size) - 1, 0),
-                            self._total_surround(int(self.settings.screen_height / self.settings.square_size) - 1, int(self.settings.screen_width / self.settings.square_size) - 1),
-                        )
-                
+                    print(
+                        'Enter Pressed',
+                        self._total_surround(5, 5),
+                        self._total_surround(10, 10)
+                    )
+
                 if event.type == pygame.MOUSEBUTTONUP:
                     if event.button == pygame.BUTTON_LEFT:
                         mouse_pos = pygame.mouse.get_pos()

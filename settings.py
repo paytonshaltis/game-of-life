@@ -22,7 +22,7 @@ class Settings:
         
         # square settings
         self.square_color = COLOR_BLACK
-        self.square_size = 20
+        self.square_size = 100
 
         # game speed settings
-        self.evolution_speed = 0.3
+        self.evolution_speed = 0.1

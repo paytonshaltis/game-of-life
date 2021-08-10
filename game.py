@@ -328,6 +328,16 @@ class Game:
             self.grid[row][col] = (self.grid[row][col][0], self.settings.bg_color)
 
 
+    def _clear_all_cells(self):
+        """Resets all cells to 'dead' in self.grid."""
+
+        # traverse self.grid
+        for row in range(len(self.grid)):
+            for col in range(len(self.grid[0])):
+                self.grid[row][col] = (self.grid[row][col][0], self.settings.bg_color)
+
+
+
     def run_game(self):
         """The main game loop."""
         
@@ -343,6 +353,10 @@ class Game:
                     if event.key == pygame.K_q:
                         self.grid = self.grid_copy
                         self.simulation_running = False
+                    if event.key == pygame.K_ESCAPE:
+                        print('pause menu')
+                    if event.key == pygame.K_c and not self.simulation_running:
+                        self._clear_all_cells()
                 if event.type == pygame.MOUSEBUTTONUP and not self.simulation_running:
                     if event.button == pygame.BUTTON_LEFT:
                         mouse_pos = pygame.mouse.get_pos()

@@ -2,6 +2,7 @@
 import pygame, pygame.display, pygame.event, pygame.rect, pygame.draw, pygame.mouse
 import sys, time
 from settings import Settings
+import settings
 
 class Game:
     """An instance of the Game class."""
@@ -81,7 +82,7 @@ class Game:
         for i in range(int(self.settings.screen_width / self.settings.square_size)):
             pygame.draw.rect(
                 self.screen,
-                (0, 0, 0),
+                self.settings.border_color,
                 pygame.Rect(
                     self.settings.square_size * i, 
                     0, 
@@ -97,7 +98,7 @@ class Game:
         for i in range(int(self.settings.screen_height / self.settings.square_size)):
             pygame.draw.rect(
                 self.screen,
-                (0, 0, 0),
+                self.settings.border_color,
                 pygame.Rect(
                     0,
                     self.settings.square_size * i,

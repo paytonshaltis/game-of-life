@@ -18,6 +18,7 @@ class Settings:
         self.screen_width = 1200
         self.screen_height = 800
         self.bg_color = COLOR_WHITE
+        self.border_color = COLOR_GRAY
         
         # square settings
         self.square_color = COLOR_BLACK

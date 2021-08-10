@@ -1,8 +1,7 @@
 """Contains the Game class to create instances of the New Game of Life."""
-import pygame, pygame.display, pygame.event, pygame.rect, pygame.draw, pygame.mouse
+import pygame, pygame.display, pygame.event, pygame.rect, pygame.draw, pygame.mouse, pygame.surface
 import sys, time
 from settings import Settings
-import settings
 
 class Game:
     """An instance of the Game class."""
@@ -16,6 +15,7 @@ class Game:
         self.grid = []
         self.grid_copy = []
         self.simulation_running = False
+        self.in_menu = False
 
         # initialize Pygame 
         pygame.init()
@@ -58,23 +58,6 @@ class Game:
             self.grid.append(row)
 
 
-    def _update_grid(self):
-        """Updates the grid each for each pass of the main game loop."""
-        
-        # while the simulation is NOT running
-        if not self.simulation_running:
-            for row in self.grid:
-                for tup in row:
-                    pygame.draw.rect(
-                        self.screen,
-                        tup[1],
-                        tup[0],
-                    )
-        else:
-            self._print_next_generation()
-            time.sleep(self.settings.evolution_speed)
-
-
     def _update_vertical_borders(self):
         """Updates the vertical borders on the screen."""  
 
@@ -113,6 +96,11 @@ class Game:
 
         self._update_vertical_borders()
         self._update_horizontal_borders()
+
+
+    def _is_alive(self, row, col):
+        """Returns True if the cell at (row, col) is alive."""
+        return self.grid[row][col][1] != self.settings.bg_color
 
 
     def _get_next_generation(self, current_gen):
@@ -162,19 +150,15 @@ class Game:
         return next_gen
 
 
-
-
     def _print_next_generation(self):
         """
         Prints the next generation to the screen. At this point, the simulation
         is running, so no changes to the grid can be made.
         """
 
-        # store the next generation here
-        next_gen = self._get_next_generation(self.grid)
-
         # change self.grid to be the next generation, then print
-        self.grid = next_gen
+        self.grid = self._get_next_generation(self.grid)
+
         for row in self.grid:
             for tup in row:
                 pygame.draw.rect(
@@ -184,16 +168,28 @@ class Game:
                 )
 
 
-
-
-    def _is_alive(self, row, col):
-        """Returns True if the cell at (row, col) is alive."""
-        return self.grid[row][col][1] != self.settings.bg_color
+    def _update_grid(self):
+        """Updates the grid each for each pass of the main game loop."""
+        
+        # if the simulation is NOT running
+        if not self.simulation_running:
+            for row in self.grid:
+                for tup in row:
+                    pygame.draw.rect(
+                        self.screen,
+                        tup[1],
+                        tup[0],
+                    )
+        # if the simulation IS running
+        else:
+            self._print_next_generation()
+            time.sleep(self.settings.evolution_speed)
 
 
     def _total_surround(self, row, col):
         """Returns the total number of living cells surrounding the one at (row, col)."""
 
+        # calculates the final row and col indices based on screen dimensions & screen size
         right_pos = int(self.settings.screen_width / self.settings.square_size) - 1
         bottom_pos = int(self.settings.screen_height / self.settings.square_size) - 1
         count = 0
@@ -296,6 +292,15 @@ class Game:
         return count
 
 
+    def _toggle_square(self, row, col):
+        """Toggles the state of a square at row, col."""
+
+        if not self._is_alive(row, col):
+            self.grid[row][col] = (self.grid[row][col][0], self.settings.square_color)
+        else:
+            self.grid[row][col] = (self.grid[row][col][0], self.settings.bg_color)
+
+
     def _check_mouse_click(self, mouse_pos):
         """
         Checks to see if a square was clicked with the mouse. The square
@@ -319,15 +324,6 @@ class Game:
             row_count += 1
 
 
-    def _toggle_square(self, row, col):
-        """Toggles the state of a square at row, col."""
-
-        if not self._is_alive(row, col):
-            self.grid[row][col] = (self.grid[row][col][0], self.settings.square_color)
-        else:
-            self.grid[row][col] = (self.grid[row][col][0], self.settings.bg_color)
-
-
     def _clear_all_cells(self):
         """Resets all cells to 'dead' in self.grid."""
 
@@ -337,31 +333,82 @@ class Game:
                 self.grid[row][col] = (self.grid[row][col][0], self.settings.bg_color)
 
 
+    def _open_pause_menu(self):
+        """
+        Opens the pause menu, freezing the current generation in place
+        and giving the user a range of different options.
+        """
+        
+        # pauses the game and brings up the menu
+        self.in_menu = True
+        size = (
+            (5/6) * self.settings.screen_width, 
+            (5/6) * self.settings.screen_height
+        )
+        pause_menu = pygame.Rect(0, 0, size[0], size[1])
+        pause_menu.center = self.screen.get_rect().center
+        while self.in_menu:
+
+            # check for events in the menu
+            for event in pygame.event.get():
+                
+                # quits the game using the red 'x' on the window
+                if event.type == pygame.QUIT:
+                    sys.exit()
+                
+                # closes out of the pause menu
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        self.in_menu = False
+
+            pygame.draw.rect(self.screen, self.settings.pause_menu_color, pause_menu)
+            pygame.display.flip()
+
+
+    def _check_keydown_events(self, event):
+        """Check for (and service) any keydown events."""
+        
+        # enter key begins the simulation
+        if event.key == pygame.K_RETURN:
+            self.grid_copy = self.grid
+            self.simulation_running = True
+        
+        # q key ends the simulation
+        if event.key == pygame.K_q:
+            self.grid = self.grid_copy
+            self.simulation_running = False
+        
+        # escape key brings up the menu
+        if event.key == pygame.K_ESCAPE:
+            self._open_pause_menu()
+
+        # c key clears the board (when sim is not running)
+        if event.key == pygame.K_c and not self.simulation_running:
+            self._clear_all_cells()
+
 
     def run_game(self):
         """The main game loop."""
-        
-        while True:
+        while not self.in_menu:
+            
             # check for events
             for event in pygame.event.get():
+                
+                # quits the game using the red 'x' on the window
                 if event.type == pygame.QUIT:
                     sys.exit()
+                
+                # check for keydown events
                 if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_RETURN:
-                        self.grid_copy = self.grid
-                        self.simulation_running = True
-                    if event.key == pygame.K_q:
-                        self.grid = self.grid_copy
-                        self.simulation_running = False
-                    if event.key == pygame.K_ESCAPE:
-                        print('pause menu')
-                    if event.key == pygame.K_c and not self.simulation_running:
-                        self._clear_all_cells()
+                    self._check_keydown_events(event)
+
+                # fills a cell in the grid (when sim is not running)
                 if event.type == pygame.MOUSEBUTTONUP and not self.simulation_running:
                     if event.button == pygame.BUTTON_LEFT:
                         mouse_pos = pygame.mouse.get_pos()
                         self._check_mouse_click(mouse_pos)
 
+            # fill background, update grid and borders
             self.screen.fill(self.settings.bg_color)
             self._update_grid()
             self._update_borders()

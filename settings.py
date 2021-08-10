@@ -16,8 +16,8 @@ class Settings:
         self.game = game
 
         # screen settings
-        self.screen_width = 900
-        self.screen_height = 600
+        self.screen_width = 1200
+        self.screen_height = 800
         self.bg_color = COLOR_WHITE
         self.border_color = COLOR_GRAY
         self.pause_menu_color = COLOR_DGRAY

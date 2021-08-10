@@ -17,11 +17,16 @@ class Game:
         self.simulation_running = False
         self.in_menu = False
 
-        # initialize Pygame 
-        pygame.init()
-
         # create a Settings object
         self.settings = Settings(self)
+
+        # check the dimensions & square size
+        if not self._check_dimensions():
+            print('Invalid dimensions!')
+            sys.exit()
+
+        # initialize Pygame 
+        pygame.init()
 
         # set up the screen
         self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
@@ -30,6 +35,16 @@ class Game:
 
         # initialize the grid
         self._initialize_grid()
+
+
+    def _check_dimensions(self):
+        """
+        Makes sure that both the height and width are evenly
+        divisible by the size of the square. Returns True if so.
+        """
+        return not (
+            self.settings.screen_width % self.settings.square_size or
+            self.settings.screen_height % self.settings.square_size)
 
 
     def _initialize_grid(self):

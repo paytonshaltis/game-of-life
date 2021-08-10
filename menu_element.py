@@ -4,29 +4,25 @@ import pygame, pygame.font
 class MenuElement:
     """Instance of a single element in the menu."""
 
-    def __init__(self, game, text, size, color, position):
+    def __init__(self, game, text, font, font_size, color, position, bold):
         """Creates a new MenuElement from the given parameters."""
 
         # instance variables
         self.game = game
         self.text = text
-        self.size = size
         self.color = color
         self.position = position
-        self.font = pygame.font.SysFont('applegothic', 48)
+        self.bold = bold
+        self.font = pygame.font.SysFont(font, font_size, bold=self.bold)
         self.rect = None
         self.text_image = None
-
-        # build the element's Rect object
-        self.rect = pygame.Rect(
-            position[0], 
-            position[1],
-            size[0],
-            size[1]
-        )
         
         # prepare the menu element
         self._set_text()
+
+        # build the element's Rect object and position it
+        self.rect = self.text_image.get_rect()
+        self.rect.midtop = self.position 
 
     
     def draw_menu_element(self):
@@ -46,4 +42,4 @@ class MenuElement:
             True,
             self.color,
             None
-        )        
+        )   

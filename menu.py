@@ -21,21 +21,6 @@ class Menu:
         self._initialize_menu()
 
 
-    def _initialize_menu(self):
-        """Initializes Menu attributes. Only needs to be done once."""
-        
-        # general instance variables
-        self.size = (
-            self.settings.menu_size * self.settings.screen_width, 
-            self.settings.menu_size * self.settings.screen_height
-        )
-        self.menu_rect = pygame.Rect(0, 0, self.size[0], self.size[1])
-        self.menu_rect.center = self.game.screen.get_rect().center
-
-        # menu elements
-        self.element_title = MenuElement(self.game, 'Menu', (200, 100), (0, 0, 0), (100, 100))
-
-    
     def draw_menu(self):
         """Draws the menu to the screen."""
 
@@ -48,3 +33,26 @@ class Menu:
 
         # the menu elements
         self.element_title.draw_menu_element()
+
+
+    def _initialize_menu(self):
+        """Initializes Menu attributes. Only needs to be done once."""
+        
+        # general instance variables
+        self.size = (
+            self.settings.menu_size * self.settings.screen_width, 
+            self.settings.menu_size * self.settings.screen_height
+        )
+        self.menu_rect = pygame.Rect(0, 0, self.size[0], self.size[1])
+        self.menu_rect.center = self.game.screen.get_rect().center
+
+        # menu elements
+        self.element_title = MenuElement(
+            game=self.game, 
+            text='MENU', 
+            font=None,
+            font_size=int(
+                (self.settings.screen_width * self.settings.screen_height) / 10000),
+            color=(0, 0, 0), 
+            position=self.menu_rect.midtop,
+            bold=False)

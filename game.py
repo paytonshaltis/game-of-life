@@ -203,7 +203,7 @@ class Game:
         # if the simulation IS running
         else:
             self._print_next_generation()
-            time.sleep(self.settings.evolution_speed)
+            #time.sleep(self.settings.evolution_speed)
 
 
     def _total_surround(self, row, col):

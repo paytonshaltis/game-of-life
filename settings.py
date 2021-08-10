@@ -5,6 +5,7 @@ COLOR_WHITE = (255, 255, 255)
 COLOR_BLACK = (0, 0, 0)
 COLOR_GRAY = (200, 200, 200)
 COLOR_DGRAY = (155, 155, 155)
+COLOR_ORANGE = (255, 164, 32)
 
 class Settings:
     """Instance of the Settings class to manage game settings."""
@@ -23,11 +24,11 @@ class Settings:
         self.border_color = COLOR_GRAY
         
         # square settings
-        self.square_color = COLOR_BLACK
-        self.square_size = 20
+        self.square_color = COLOR_ORANGE
+        self.square_size = 10
 
         # game speed settings
-        self.evolution_speed = 0.1
+        self.evolution_speed = .001
 
         # menu settings
         self.menu_size = 5/6

@@ -24,4 +24,4 @@ class Settings:
         self.square_size = 20
 
         # game speed settings
-        self.evolution_speed = 1
+        self.evolution_speed = 0.3

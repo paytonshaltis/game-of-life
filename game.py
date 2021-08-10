@@ -1,5 +1,4 @@
 """Contains the Game class to create instances of the New Game of Life."""
-from typing import Tuple
 import pygame, pygame.display, pygame.event, pygame.rect, pygame.draw, pygame.mouse
 import sys, time
 from settings import Settings
@@ -14,6 +13,8 @@ class Game:
         self.settings = None
         self.screen = None
         self.grid = []
+        self.grid_copy = []
+        self.simulation_running = False
 
         # initialize Pygame 
         pygame.init()
@@ -59,21 +60,18 @@ class Game:
     def _update_grid(self):
         """Updates the grid each for each pass of the main game loop."""
         
-        # use the rect and color from each tuple in self.grid
-        for row in self.grid:
-            for tup in row:
-                pygame.draw.rect(
-                    self.screen,
-                    tup[1],
-                    tup[0],
-                )
-
-
-    def _update_borders(self):
-        """Updates the borders of the grid for each pass of the main game loop."""
-
-        self._update_vertical_borders()
-        self._update_horizontal_borders()
+        # while the simulation is NOT running
+        if not self.simulation_running:
+            for row in self.grid:
+                for tup in row:
+                    pygame.draw.rect(
+                        self.screen,
+                        tup[1],
+                        tup[0],
+                    )
+        else:
+            self._print_next_generation()
+            time.sleep(self.settings.evolution_speed)
 
 
     def _update_vertical_borders(self):
@@ -107,6 +105,84 @@ class Game:
                     1
                 )
             )
+
+
+    def _update_borders(self):
+        """Updates the borders of the grid for each pass of the main game loop."""
+
+        self._update_vertical_borders()
+        self._update_horizontal_borders()
+
+
+    def _get_next_generation(self, current_gen):
+        """Returns a new List containing the next generation of cells."""
+
+        # variables used and returned
+        next_gen = []
+        current_row = []
+        row_count = 0
+        col_count = 0
+
+        # traverse through each cell and follow Conway's rules
+        for row in current_gen:
+
+            current_row = []
+            col_count = 0
+            for tup in row:
+                
+                # if the cell is alive
+                if self._is_alive(row_count, col_count):
+                    
+                    # dies from not enough or too many surrounding cells
+                    if self._total_surround(row_count, col_count) < 2 or self._total_surround(row_count, col_count) > 3:
+                        current_row.append((tup[0], self.settings.bg_color))
+                    # lives from enough surrounding cells
+                    else:
+                        current_row.append((tup[0], self.settings.square_color))
+                
+                # if the cell is dead
+                else:
+                    
+                    # comes back to life if surrounded by exactly 3 cells
+                    if self._total_surround(row_count, col_count) == 3:
+                        current_row.append((tup[0], self.settings.square_color))
+                    # stays dead from not enough or too many surrounding cells
+                    else:
+                        current_row.append((tup[0], self.settings.bg_color))
+
+                # advance the column counter
+                col_count += 1
+
+            # add the next generation row and advance the row counter
+            next_gen.append(current_row)
+            row_count += 1
+
+        # return the next generation of cells
+        return next_gen
+
+
+
+
+    def _print_next_generation(self):
+        """
+        Prints the next generation to the screen. At this point, the simulation
+        is running, so no changes to the grid can be made.
+        """
+
+        # store the next generation here
+        next_gen = self._get_next_generation(self.grid)
+
+        # change self.grid to be the next generation, then print
+        self.grid = next_gen
+        for row in self.grid:
+            for tup in row:
+                pygame.draw.rect(
+                    self.screen,
+                    tup[1],
+                    tup[0],
+                )
+
+
 
 
     def _is_alive(self, row, col):
@@ -230,16 +306,15 @@ class Game:
         col_count = 0
         
         for row in self.grid:
-            
             col_count = 0
+
             for tup in row:
                 # if a mouse point collides with a rectangle, toggle it
                 if tup[0].collidepoint(mouse_pos):
                     self._toggle_square(row_count, col_count)
                     return
-
                 col_count += 1
-            
+
             row_count += 1
 
 
@@ -260,17 +335,16 @@ class Game:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     sys.exit()
-                if event.type == pygame.KEYUP:
-                    print(
-                        'Enter Pressed',
-                        self._total_surround(5, 5),
-                        self._total_surround(10, 10)
-                    )
-
-                if event.type == pygame.MOUSEBUTTONUP:
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_RETURN:
+                        self.grid_copy = self.grid
+                        self.simulation_running = True
+                    if event.key == pygame.K_q:
+                        self.grid = self.grid_copy
+                        self.simulation_running = False
+                if event.type == pygame.MOUSEBUTTONUP and not self.simulation_running:
                     if event.button == pygame.BUTTON_LEFT:
                         mouse_pos = pygame.mouse.get_pos()
-                        print(mouse_pos)
                         self._check_mouse_click(mouse_pos)
 
             self.screen.fill(self.settings.bg_color)
